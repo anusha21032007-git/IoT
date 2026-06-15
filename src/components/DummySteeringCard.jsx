@@ -142,11 +142,6 @@ export default function DummySteeringCard({
           onMouseDown={handleMouseDown}
           onTouchStart={handleTouchStart}
         >
-          {/* Click / touch action text hover overlay */}
-          <div className="wheel-touch-overlay">
-            <span className="overlay-hint">DRAG TO STEER</span>
-          </div>
-
           <div className="steering-wheel" id="dummy-wheel" style={{ transform: `rotate(${dummyAngle}deg)` }}>
             <svg className="steering-wheel-svg" viewBox="0 0 240 240">
               <defs>
@@ -176,6 +171,8 @@ export default function DummySteeringCard({
 
               {/* Center Hub carbon texture area */}
               <circle cx="120" cy="120" r="34" fill="url(#hub-grad-dum)" stroke="#1d2636" strokeWidth="2" />
+              {/* Pulsing interactive hub glow */}
+              <circle className="hub-pulse-glow" cx="120" cy="120" r="34" fill="none" stroke="#00f0ff" strokeWidth="2" />
 
               {/* Logo Badge */}
               <circle cx="120" cy="120" r="18" fill="#0c1117" stroke="#ffffff" strokeWidth="1.5" />

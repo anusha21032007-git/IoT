@@ -5,6 +5,7 @@ import MatchGaugeCard from './components/MatchGaugeCard';
 import DummySteeringCard from './components/DummySteeringCard';
 import InstructorPanel from './components/InstructorPanel';
 import ControlButtons from './components/ControlButtons';
+import RotateDevice from './components/RotateDevice';
 import './App.css';
 
 const LESSONS = [
@@ -22,6 +23,10 @@ function App() {
   const [actualAngle, setActualAngle] = useState(0);
   const [dummyAngle, setDummyAngle] = useState(0);
   const [elapsedTime, setElapsedTime] = useState(0);
+  
+  const [isLandscape, setIsLandscape] = useState(
+    window.matchMedia("(orientation: landscape)").matches || window.innerWidth > window.innerHeight
+  );
   
   // Dynamic telemetry metrics (kept for state management compatibility)
   const [temp, setTemp] = useState(35.4);
@@ -45,6 +50,26 @@ function App() {
   // Cleanup on unmount
   useEffect(() => {
     return () => stopAllTimers();
+  }, []);
+
+  // Listen for orientation and resize changes
+  useEffect(() => {
+    const handleResize = () => {
+      const isOrientLandscape = window.matchMedia("(orientation: landscape)").matches;
+      const isWidthGreater = window.innerWidth > window.innerHeight;
+      setIsLandscape(isOrientLandscape || isWidthGreater);
+    };
+
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('orientationchange', handleResize);
+    
+    // Initial check
+    handleResize();
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', handleResize);
+    };
   }, []);
 
   // Sync angle ref
@@ -187,6 +212,10 @@ function App() {
   const instruction = activeLesson ? activeLesson.instruction : '';
   const scenarioTitle = activeLesson ? activeLesson.scenarioTitle : '';
   const targetAngle = activeLesson ? activeLesson.target : 0;
+
+  if (!isLandscape) {
+    return <RotateDevice />;
+  }
 
   return (
     <div className="cockpit-container">

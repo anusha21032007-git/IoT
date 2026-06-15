@@ -67,16 +67,18 @@ body {
     background-position: 0 0, 0 0, 6px 0, 6px 6px, 0 6px;
     color: var(--text-primary);
     font-family: var(--font-ui);
-    min-height: 100vh;
+    height: 100vh;
+    height: 100dvh;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 24px;
-    overflow-x: hidden;
+    padding: 16px;
+    overflow: hidden;
 }
 
 #root {
     width: 100%;
+    height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;

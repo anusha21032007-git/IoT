@@ -1,7 +1,14 @@
+:root {
+    --wheel-size: 220px;
+    --gauge-size: 380px;
+}
+
 /* Dashboard Cockpit Wrapper */
 .cockpit-container {
     width: 100%;
     max-width: 1240px;
+    height: 100%;
+    max-height: 100%;
     background: radial-gradient(100% 100% at 50% 0%, rgba(18, 25, 36, 0.4) 0%, rgba(8, 12, 18, 0.7) 100%);
     border: 1px solid var(--border-subtle);
     border-radius: 28px;
@@ -10,14 +17,16 @@
         inset 0 1px 0 rgba(255, 255, 255, 0.08),
         inset 0 -1px 0 rgba(0, 0, 0, 0.5),
         0 0 50px rgba(0, 240, 255, 0.03);
-    padding: 32px;
+    padding: 24px;
     display: flex;
     flex-direction: column;
-    gap: 32px;
+    justify-content: space-between;
+    gap: 16px;
     backdrop-filter: blur(28px);
     -webkit-backdrop-filter: blur(28px);
     position: relative;
     overflow: hidden;
+    box-sizing: border-box;
 }
 
 /* Neon Top Accent Line */
@@ -157,11 +166,13 @@
 /* Dashboard Grid Layout */
 .dashboard-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: 1fr 1.5fr 1fr;
     gap: 24px;
     position: relative;
     z-index: 5;
     align-items: stretch;
+    flex: 1;
+    min-height: 0;
 }
 
 @media (max-width: 1024px) {
@@ -170,20 +181,14 @@
     }
 }
 
-@media (max-width: 768px) {
-    .dashboard-grid {
-        grid-template-columns: 1fr;
-        gap: 24px;
-    }
-}
-
 /* Glassmorphism Telemetry Cards */
 .telemetry-card {
     background: var(--bg-glass);
     border: 1px solid var(--border-subtle);
     border-radius: 24px;
-    padding: 28px;
-    min-height: 440px;
+    padding: 20px 24px;
+    height: 100%;
+    min-height: 0;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -259,17 +264,17 @@
 /* Steering Wheel Outer Structure */
 .wheel-outer-wrapper {
     position: relative;
-    width: 220px;
-    height: 220px;
+    width: var(--wheel-size);
+    height: var(--wheel-size);
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 10px 0;
+    margin: 4px 0;
 }
 
 .steering-wheel-container {
-    width: 220px;
-    height: 220px;
+    width: 100%;
+    height: 100%;
     position: relative;
     display: flex;
     justify-content: center;
@@ -444,8 +449,8 @@
 /* Circular Accuracy Gauge Details */
 .gauge-outer-wrapper {
     position: relative;
-    width: 220px;
-    height: 220px;
+    width: var(--gauge-size);
+    height: var(--gauge-size);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -503,7 +508,7 @@
 
 .gauge-accuracy-percentage {
     font-family: var(--font-cyber);
-    font-size: 2.75rem;
+    font-size: 4.5rem;
     font-weight: 900;
     color: var(--text-primary);
     line-height: 1;
@@ -1010,6 +1015,279 @@
     .instructor-text-group {
         flex-direction: column;
         gap: 6px;
+    }
+}
+
+/* Height-based media queries to fit viewport without scroll */
+@media (max-height: 850px) {
+    :root {
+        --wheel-size: 180px;
+        --gauge-size: 310px;
+    }
+    .gauge-accuracy-percentage {
+        font-size: 3.8rem;
+    }
+    .telemetry-card {
+        padding: 16px 20px;
+    }
+    .cockpit-container {
+        padding: 16px;
+        gap: 12px;
+    }
+    .dashboard-header {
+        padding-bottom: 12px;
+    }
+}
+
+@media (max-height: 700px) {
+    :root {
+        --wheel-size: 140px;
+        --gauge-size: 240px;
+    }
+    .gauge-accuracy-percentage {
+        font-size: 3rem;
+    }
+    .logo-title {
+        font-size: 1.4rem;
+    }
+    .logo-tagline {
+        font-size: 0.65rem;
+    }
+    .telemetry-number {
+        font-size: 1.1rem;
+    }
+    .match-status-card {
+        padding: 4px 12px;
+        min-width: 120px;
+    }
+    .telemetry-card {
+        padding: 12px 16px;
+    }
+    .controls-panel {
+        padding: 12px 24px;
+    }
+    .centered-controls-panel {
+        padding: 12px;
+    }
+    .instructor-bar {
+        padding: 10px 18px;
+    }
+    .instructor-instruction {
+        font-size: 0.85rem;
+    }
+    .instructor-label {
+        font-size: 0.65rem;
+    }
+    .instructor-countdown-group {
+        padding: 4px 12px;
+    }
+    .countdown-value {
+        font-size: 1.1rem;
+    }
+    .countdown-label {
+        font-size: 0.55rem;
+    }
+}
+
+@media (max-height: 560px) {
+    :root {
+        --wheel-size: 110px;
+        --gauge-size: 190px;
+    }
+    .gauge-accuracy-percentage {
+        font-size: 2rem;
+    }
+    .dashboard-header {
+        display: none; /* Hide header completely when height is very small */
+    }
+    .cockpit-container {
+        border-radius: 16px;
+        padding: 8px;
+        gap: 8px;
+    }
+    .telemetry-card {
+        border-radius: 16px;
+        padding: 8px 12px;
+    }
+    .card-meta {
+        padding-bottom: 6px;
+        margin-bottom: 6px;
+    }
+    .stats-panel {
+        margin-top: 8px;
+    }
+    .telemetry-value-display {
+        margin-bottom: 8px;
+        gap: 2px;
+    }
+    .telemetry-number {
+        font-size: 0.95rem;
+    }
+    .telemetry-box {
+        padding: 6px 12px;
+    }
+    .sub-telemetry-row {
+        display: none; /* Hide secondary telemetry info in compact layouts */
+    }
+    .gauge-status-panel .accuracy-details-list {
+        display: none !important; /* Hide extra list on small heights */
+    }
+    .feedback-message-box {
+        margin-top: 4px !important;
+        padding: 4px 10px !important;
+        min-width: 140px !important;
+    }
+    .feedback-msg-text {
+        font-size: 0.7rem !important;
+    }
+    .instructor-bar {
+        padding: 8px 12px;
+        border-radius: 12px;
+    }
+    .instructor-instruction {
+        font-size: 0.75rem;
+    }
+    .controls-panel {
+        padding: 8px;
+    }
+    .infotainment-btn .btn-inner {
+        padding: 6px 14px;
+        font-size: 0.7rem;
+    }
+    .infotainment-btn {
+        min-width: 100px;
+    }
+}
+
+/* Portrait Warning Overlay Styles */
+.rotate-device-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    width: 100dvw;
+    height: 100vh;
+    height: 100dvh;
+    background-color: var(--bg-darkest);
+    background-image: 
+        radial-gradient(circle at 50% 30%, rgba(0, 240, 255, 0.15) 0%, transparent 60%),
+        linear-gradient(45deg, rgba(0, 0, 0, 0.3) 25%, transparent 25%), 
+        linear-gradient(-45deg, rgba(0, 0, 0, 0.3) 25%, transparent 25%), 
+        linear-gradient(45deg, transparent 75%, rgba(0, 0, 0, 0.3) 75%), 
+        linear-gradient(-45deg, transparent 75%, rgba(0, 0, 0, 0.3) 75%);
+    background-size: 100% 100%, 12px 12px, 12px 12px, 12px 12px, 12px 12px;
+    background-position: 0 0, 0 0, 6px 0, 6px 6px, 0 6px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    padding: 24px;
+    text-align: center;
+    color: var(--text-primary);
+}
+
+.rotate-device-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    max-width: 320px;
+}
+
+.rotate-icon-container {
+    width: 80px;
+    height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--accent-blue);
+    filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.4));
+    margin-bottom: 8px;
+}
+
+.rotate-icon-svg {
+    width: 100%;
+    height: 100%;
+}
+
+.phone-device {
+    transform-origin: 32px 32px;
+    animation: rotatePhone 2.5s ease-in-out infinite;
+}
+
+.rotate-arrow {
+    stroke-dasharray: 60;
+    stroke-dashoffset: 0;
+    animation: pulseArrow 2.5s ease-in-out infinite;
+}
+
+@keyframes rotatePhone {
+    0% {
+        transform: rotate(0deg);
+    }
+    30% {
+        transform: rotate(-90deg);
+    }
+    70% {
+        transform: rotate(-90deg);
+    }
+    100% {
+        transform: rotate(0deg);
+    }
+}
+
+@keyframes pulseArrow {
+    0%, 100% {
+        opacity: 0.3;
+        stroke-dashoffset: 10;
+    }
+    50% {
+        opacity: 1;
+        stroke-dashoffset: 0;
+    }
+}
+
+.rotate-title {
+    font-family: var(--font-cyber);
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--accent-blue);
+    text-shadow: 0 0 15px rgba(0, 240, 255, 0.5);
+    letter-spacing: 1px;
+    margin: 0;
+}
+
+.rotate-message {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.rotate-subtitle {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+/* Pulsing Interactive Hub Glow */
+.hub-pulse-glow {
+    animation: hubGlowPulse 2.5s infinite ease-in-out;
+    pointer-events: none;
+}
+
+@keyframes hubGlowPulse {
+    0% {
+        stroke-opacity: 0.25;
+        filter: drop-shadow(0 0 1px rgba(0, 240, 255, 0.25));
+    }
+    50% {
+        stroke-opacity: 0.85;
+        filter: drop-shadow(0 0 6px rgba(0, 240, 255, 0.75));
+    }
+    100% {
+        stroke-opacity: 0.25;
+        filter: drop-shadow(0 0 1px rgba(0, 240, 255, 0.25));
     }
 }
 

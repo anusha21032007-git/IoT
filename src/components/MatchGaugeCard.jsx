@@ -69,7 +69,7 @@ export default function MatchGaugeCard({ actualAngle = 0, dummyAngle = 0 }) {
   // Standout border / glow color styles based on current accuracy level
   const heroCardStyle = {
     borderColor: `rgba(${accuracy >= 90 ? '0, 255, 159' : accuracy >= 70 ? '255, 204, 0' : accuracy >= 50 ? '255, 149, 0' : '255, 59, 48'}, 0.45)`,
-    boxShadow: `0 0 35px rgba(${accuracy >= 90 ? '0, 255, 159' : accuracy >= 70 ? '255, 204, 0' : accuracy >= 50 ? '255, 149, 0' : '255, 59, 48'}, 0.15), inset 0 0 25px rgba(${accuracy >= 90 ? '0, 255, 159' : accuracy >= 70 ? '255, 204, 0' : accuracy >= 50 ? '255, 149, 0' : '255, 59, 48'}, 0.05)`,
+    boxShadow: `0 0 45px rgba(${accuracy >= 90 ? '0, 255, 159' : accuracy >= 70 ? '255, 204, 0' : accuracy >= 50 ? '255, 149, 0' : '255, 59, 48'}, 0.2), inset 0 0 30px rgba(${accuracy >= 90 ? '0, 255, 159' : accuracy >= 70 ? '255, 204, 0' : accuracy >= 50 ? '255, 149, 0' : '255, 59, 48'}, 0.08)`,
     transform: 'scale(1.02)',
     zIndex: 6
   };
@@ -105,33 +105,27 @@ export default function MatchGaugeCard({ actualAngle = 0, dummyAngle = 0 }) {
           </svg>
           <div className="gauge-overlay-content">
             <span className={`gauge-accuracy-percentage ${textClass}`} id="accuracy-percentage-val">{accuracy}%</span>
-            <span className="gauge-accuracy-label">ACCURACY</span>
           </div>
         </div>
       </div>
 
-      <div className="gauge-status-panel">
-        <div className="accuracy-details-list" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', width: '100%' }}>
-          <div className="detail-item-row" style={{ display: 'flex', gap: '8px', fontSize: '0.85rem' }}>
-            <span className="detail-label" style={{ color: 'var(--text-muted)' }}>Status:</span>
-            <span className="detail-val" style={{ color: themeColorVar, fontWeight: 'bold' }}>{statusText}</span>
-          </div>
-          <div className="detail-item-row" style={{ display: 'flex', gap: '8px', fontSize: '0.85rem' }}>
-            <span className="detail-label" style={{ color: 'var(--text-muted)' }}>Difference:</span>
-            <span className="detail-val" style={{ color: 'var(--text-primary)', fontWeight: 'bold' }}>{Math.round(difference)}°</span>
-          </div>
+      <div className="gauge-status-panel" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', width: '100%' }}>
+        <div style={{ color: themeColorVar, fontWeight: 'bold', fontSize: '1.25rem', fontFamily: 'var(--font-cyber)', textTransform: 'uppercase', letterSpacing: '1px' }}>
+          {statusText}
         </div>
-        
+        <div style={{ color: 'var(--text-primary)', fontSize: '1.05rem', fontWeight: '600', fontFamily: 'var(--font-cyber)' }}>
+          Difference: {Math.round(difference)}°
+        </div>
         <div className={`feedback-message-box ${statusClass}`} style={{ 
-          marginTop: '8px', 
-          padding: '6px 14px', 
+          marginTop: '4px', 
+          padding: '6px 16px', 
           borderRadius: '8px', 
-          border: `1px solid rgba(${accuracy >= 90 ? '0, 255, 159' : accuracy >= 70 ? '255, 204, 0' : accuracy >= 50 ? '255, 149, 0' : '255, 59, 48'}, 0.2)`,
-          background: 'rgba(0, 0, 0, 0.2)',
+          border: `1px solid rgba(${accuracy >= 90 ? '0, 255, 159' : accuracy >= 70 ? '255, 204, 0' : accuracy >= 50 ? '255, 149, 0' : '255, 59, 48'}, 0.25)`,
+          background: 'rgba(0, 0, 0, 0.3)',
           textAlign: 'center',
-          minWidth: '180px'
+          minWidth: '200px'
         }}>
-          <span className={`feedback-msg-text ${textClass}`} style={{ fontWeight: 'bold', fontSize: '0.8rem', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
+          <span className={`feedback-msg-text ${textClass}`} style={{ fontWeight: 'bold', fontSize: '0.9rem', letterSpacing: '0.5px' }}>
             {feedbackMessage}
           </span>
         </div>
