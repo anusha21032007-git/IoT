@@ -1,0 +1,83 @@
+/* ==========================================================================
+   DriveSync - High-Fidelity Cyberpunk Automotive Cockpit Dashboard Styles
+   ========================================================================== */
+
+/* Design Tokens & Custom Properties */
+:root {
+    --bg-darkest: #070a0e;
+    --bg-primary: #0b1017;
+    --bg-secondary: #121922;
+    --bg-glass: rgba(11, 16, 23, 0.65);
+    --bg-glass-hover: rgba(16, 23, 33, 0.75);
+    
+    --accent-blue: #00f0ff;
+    --accent-blue-rgb: 0, 240, 255;
+    --accent-blue-glow: rgba(0, 240, 255, 0.4);
+    
+    --accent-green: #00ff9f;
+    --accent-green-rgb: 0, 255, 159;
+    --accent-green-glow: rgba(0, 255, 159, 0.35);
+    
+    --accent-yellow: #ffcc00;
+    --accent-yellow-rgb: 255, 204, 0;
+    --accent-yellow-glow: rgba(255, 204, 0, 0.3);
+
+    --accent-orange: #ff9500;
+    --accent-orange-rgb: 255, 149, 0;
+    --accent-orange-glow: rgba(255, 149, 0, 0.3);
+
+    --accent-red: #ff3b30;
+    --accent-red-rgb: 255, 59, 48;
+    --accent-red-glow: rgba(255, 59, 48, 0.45);
+    
+    --border-glow: rgba(0, 240, 255, 0.2);
+    --border-subtle: rgba(255, 255, 255, 0.06);
+    
+    --text-primary: #f8fafc;
+    --text-muted: #64748b;
+    --text-dim: #475569;
+    
+    --font-cyber: 'Orbitron', -apple-system, sans-serif;
+    --font-ui: 'Inter', -apple-system, sans-serif;
+    
+    --transition-fast: 0.15s ease;
+    --transition-normal: 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    --transition-slow: 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Base resets & Layout */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+body {
+    background-color: var(--bg-darkest);
+    /* Premium Carbon-Fiber texture overlay combined with radial ambient light */
+    background-image: 
+        radial-gradient(circle at 50% 20%, rgba(0, 240, 255, 0.1) 0%, transparent 60%),
+        linear-gradient(45deg, rgba(0, 0, 0, 0.3) 25%, transparent 25%), 
+        linear-gradient(-45deg, rgba(0, 0, 0, 0.3) 25%, transparent 25%), 
+        linear-gradient(45deg, transparent 75%, rgba(0, 0, 0, 0.3) 75%), 
+        linear-gradient(-45deg, transparent 75%, rgba(0, 0, 0, 0.3) 75%);
+    background-size: 100% 100%, 12px 12px, 12px 12px, 12px 12px, 12px 12px;
+    background-position: 0 0, 0 0, 6px 0, 6px 6px, 0 6px;
+    color: var(--text-primary);
+    font-family: var(--font-ui);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 24px;
+    overflow-x: hidden;
+}
+
+#root {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
