@@ -9,6 +9,21 @@ export default function DummySteeringCard({
 }) {
   const [inputMethod, setInputMethod] = useState('MANUAL');
 
+  const [isMoving, setIsMoving] = useState(false);
+  const prevAngleRef = useRef(dummyAngle);
+  const timeoutRef = useRef(null);
+
+  useEffect(() => {
+    if (Math.abs(dummyAngle - prevAngleRef.current) > 0.1) {
+      setIsMoving(true);
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      timeoutRef.current = setTimeout(() => {
+        setIsMoving(false);
+      }, 150);
+    }
+    prevAngleRef.current = dummyAngle;
+  }, [dummyAngle]);
+
   const wheelContainerRef = useRef(null);
   const isDraggingRef = useRef(false);
   const startCursorAngleRef = useRef(0);
@@ -55,8 +70,9 @@ export default function DummySteeringCard({
     if (delta > 180) delta -= 360;
     if (delta < -180) delta += 360;
 
+    // Direct 1-to-1 tracking between cursor angle change and visual wheel angle change.
     let target = startWheelAngleRef.current + delta;
-    target = Math.max(-180, Math.min(180, target));
+    target = Math.max(-90, Math.min(90, target));
 
     setDummyAngle(target);
   };
@@ -116,7 +132,12 @@ export default function DummySteeringCard({
   const formatAngle = (angle) => {
     const rounded = Math.round(angle);
     const sign = rounded > 0 ? '+' : '';
-    const dir = rounded > 0 ? 'RIGHT' : (rounded < 0 ? 'LEFT' : 'CENTER');
+    const dir =
+      rounded > 0
+        ? 'RIGHT'
+        : rounded < 0
+          ? 'LEFT'
+          : 'CENTER';
     return {
       text: `${sign}${rounded}°`,
       dir
@@ -129,8 +150,8 @@ export default function DummySteeringCard({
     <section className="telemetry-card glass-card" id="dummy-steering-section">
       <div className="card-edge-glow"></div>
       <div className="card-meta">
-        <span className="panel-label">Dummy Steering</span>
-        <span className="telemetry-id">SIM-03</span>
+        <span className="panel-label">Passenger</span>
+        <span className="telemetry-id">Passenger</span>
       </div>
 
       <div className="wheel-outer-wrapper">
@@ -142,97 +163,133 @@ export default function DummySteeringCard({
           onMouseDown={handleMouseDown}
           onTouchStart={handleTouchStart}
         >
-          <div className="steering-wheel" id="dummy-wheel" style={{ transform: `rotate(${dummyAngle}deg)` }}>
+          <div
+            className={`steering-wheel ${inputMethod === 'STEERING' ? 'dragging' : ''} ${isMoving ? 'is-moving' : ''}`}
+            id="dummy-wheel"
+            style={{
+              transform: `rotate(${dummyAngle}deg)`,
+              transition: inputMethod === 'STEERING' ? 'none' : 'transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1)'
+            }}
+          >
             <svg className="steering-wheel-svg" viewBox="0 0 240 240">
               <defs>
-                <radialGradient id="rim-grad-dum" cx="50%" cy="50%" r="50%">
-                  <stop offset="72%" stopColor="#181f2a" />
-                  <stop offset="92%" stopColor="#0f141b" />
-                  <stop offset="100%" stopColor="#06090d" />
+                {/* Shadow and glow filters */}
+                <filter id="steer-shadow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feDropShadow dx="0" dy="4" stdDeviation="4" floodColor="#000000" floodOpacity="0.8" />
+                </filter>
+                <filter id="cyan-glow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="3" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+
+                {/* Radial gradient for outer rim */}
+                <radialGradient id="leather-rim" cx="50%" cy="50%" r="50%">
+                  <stop offset="76%" stopColor="#1b202c" />
+                  <stop offset="85%" stopColor="#11151e" />
+                  <stop offset="96%" stopColor="#0a0d13" />
+                  <stop offset="100%" stopColor="#05070a" />
                 </radialGradient>
-                <radialGradient id="hub-grad-dum" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%" stopColor="#323e54" />
-                  <stop offset="65%" stopColor="#19202e" />
-                  <stop offset="100%" stopColor="#0d111a" />
+
+                {/* Hub & spoke textures */}
+                <radialGradient id="hub-grad" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stopColor="#283243" />
+                  <stop offset="65%" stopColor="#141a25" />
+                  <stop offset="100%" stopColor="#0a0d14" />
                 </radialGradient>
+
+                <linearGradient id="brushed-metal" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#5a6a85" />
+                  <stop offset="50%" stopColor="#2e3848" />
+                  <stop offset="100%" stopColor="#161c25" />
+                </linearGradient>
+
+                <linearGradient id="chrome-ring" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stopColor="#8fa3c2" />
+                  <stop offset="50%" stopColor="#2e3848" />
+                  <stop offset="100%" stopColor="#111620" />
+                </linearGradient>
               </defs>
 
-              {/* Outer Rim leather shadow */}
-              <circle cx="120" cy="120" r="100" fill="none" stroke="rgba(0, 0, 0, 0.7)" strokeWidth="20" />
-              {/* Outer Rim */}
-              <circle cx="120" cy="120" r="100" fill="none" stroke="url(#rim-grad-dum)" strokeWidth="16" />
-              {/* Dashed Neon interaction pattern */}
-              <circle cx="120" cy="120" r="92" fill="none" stroke="#00f0ff" strokeWidth="1.5" strokeDasharray="6, 4" opacity="0.6" />
+              {/* Ambient Backlight (visible during rotation) */}
+              <circle className="wheel-ambient-glow" cx="120" cy="120" r="102" fill="none" stroke="#00f0ff" strokeWidth="20" opacity="0" filter="url(#cyan-glow)" />
 
-              {/* Spokes */}
-              <path d="M 30 114 L 85 114 Q 92 114 90 128 L 34 128 Z" fill="#2c374b" />
-              <path d="M 210 114 L 155 114 Q 148 114 150 128 L 206 128 Z" fill="#2c374b" />
-              <path d="M 112 150 L 112 206 C 112 210 128 210 128 206 L 128 150 Z" fill="#2c374b" />
+              {/* Outer Rim Shadow */}
+              <circle cx="120" cy="120" r="102" fill="none" stroke="rgba(0, 0, 0, 0.85)" strokeWidth="22" />
+              {/* Outer Rim Body */}
+              <circle cx="120" cy="120" r="102" fill="none" stroke="url(#leather-rim)" strokeWidth="18" />
+              {/* Inner Rim Highlight */}
+              <circle cx="120" cy="120" r="93.5" fill="none" stroke="#00f0ff" strokeWidth="1" opacity="0.25" />
 
-              {/* Center Hub carbon texture area */}
-              <circle cx="120" cy="120" r="34" fill="url(#hub-grad-dum)" stroke="#1d2636" strokeWidth="2" />
-              {/* Pulsing interactive hub glow */}
-              <circle className="hub-pulse-glow" cx="120" cy="120" r="34" fill="none" stroke="#00f0ff" strokeWidth="2" />
+              {/* Leather Stitching Details */}
+              <circle cx="120" cy="120" r="110.5" fill="none" stroke="#252e3d" strokeWidth="0.8" strokeDasharray="3 3" opacity="0.7" />
+              <circle cx="120" cy="120" r="93.5" fill="none" stroke="#252e3d" strokeWidth="0.8" strokeDasharray="3 3" opacity="0.7" />
 
-              {/* Logo Badge */}
-              <circle cx="120" cy="120" r="18" fill="#0c1117" stroke="#ffffff" strokeWidth="1.5" />
-              <text x="120" y="123" fontFamily="'Orbitron', sans-serif" fontSize="9" fontWeight="900" fill="#ffffff" textAnchor="middle" letterSpacing="0.5">REF</text>
+              {/* Dashed Neon Interaction Pattern (Reference Wheel Indicator) */}
+              <circle cx="120" cy="120" r="92" fill="none" stroke="#00f0ff" strokeWidth="1.5" strokeDasharray="6, 4" opacity="0.65" className="wheel-glow-accent" />
 
-              {/* Grip markers */}
-              <path d="M 29 95 Q 26 105 29 115 L 33 115 Q 30 105 33 95 Z" fill="#0a0d14" />
-              <path d="M 211 95 Q 214 105 211 115 L 207 115 Q 210 105 207 95 Z" fill="#0a0d14" />
+              {/* 12 O'Clock Racing Stripe (Cyan) */}
+              <path d="M 113.8 18.2 A 102 102 0 0 1 126.2 18.2" fill="none" stroke="#00f0ff" strokeWidth="18.5" className="wheel-glow-accent" />
 
-              {/* Drag handle point */}
-              <g className="drag-point-handle">
-                <circle cx="120" cy="28" r="8" fill="#00f0ff" stroke="#ffffff" strokeWidth="1.5" />
-                <circle cx="120" cy="28" r="4" fill="#0b0f14" />
+              {/* Spokes Ambient Backlight */}
+              <path d="M 40 120 L 200 120" stroke="#00f0ff" strokeWidth="8" opacity="0" className="wheel-ambient-glow" filter="url(#cyan-glow)" />
+
+              {/* Horizontal Spokes (Left & Right) */}
+              {/* Left Spoke */}
+              <path d="M 32 105 L 86 105 C 92 105 94 100 96 95 L 96 145 C 94 140 92 135 86 135 L 32 135 C 26 130 26 110 32 105 Z" fill="url(#brushed-metal)" filter="url(#steer-shadow)" />
+              <path d="M 38 116 L 54 116 L 54 124 L 38 124 Z" fill="#080a0f" />
+              <rect x="58" y="108" width="34" height="24" rx="4" fill="#11151e" stroke="#252d3a" strokeWidth="1.5" />
+              <circle cx="66" cy="114" r="2.5" fill="#4a5568" />
+              <circle cx="74" cy="114" r="2.5" fill="#4a5568" />
+              <circle cx="66" cy="126" r="2.5" fill="#4a5568" />
+              <circle cx="74" cy="126" r="2.5" fill="#4a5568" />
+              <rect x="80" y="112" width="6" height="16" rx="1.5" fill="#00f0ff" className="wheel-glow-accent" />
+
+              {/* Right Spoke */}
+              <path d="M 208 105 L 154 105 C 148 105 146 100 144 95 L 144 145 C 146 140 148 135 154 135 L 208 135 C 214 130 214 110 208 105 Z" fill="url(#brushed-metal)" filter="url(#steer-shadow)" />
+              <path d="M 202 116 L 186 116 L 186 124 L 202 124 Z" fill="#080a0f" />
+              <rect x="148" y="108" width="34" height="24" rx="4" fill="#11151e" stroke="#252d3a" strokeWidth="1.5" />
+              <circle cx="174" cy="114" r="2.5" fill="#4a5568" />
+              <circle cx="166" cy="114" r="2.5" fill="#4a5568" />
+              <circle cx="174" cy="126" r="2.5" fill="#4a5568" />
+              <circle cx="166" cy="126" r="2.5" fill="#4a5568" />
+              <rect x="154" y="112" width="6" height="16" rx="1.5" fill="#00f0ff" className="wheel-glow-accent" />
+
+              {/* Bottom Split Spoke */}
+              <path d="M 104 145 L 108 206 C 108 212 112 214 114 214 L 117 214 L 117 145 Z" fill="url(#brushed-metal)" />
+              <path d="M 136 145 L 132 206 C 132 212 128 214 126 214 L 123 214 L 123 145 Z" fill="url(#brushed-metal)" />
+              <rect x="117" y="202" width="6" height="12" fill="#00f0ff" className="wheel-glow-accent" />
+
+              {/* Ergonomic Molded Thumb Grips */}
+              <path d="M 31 60 C 24 72 23 88 28 100 C 34 100 37 92 38 85 C 39 78 37 68 31 60 Z" fill="#0c0f15" />
+              <path d="M 209 60 C 216 72 217 88 212 100 C 206 100 203 92 202 85 C 201 78 203 68 209 60 Z" fill="#0c0f15" />
+
+              {/* Central Stitched airbag pad */}
+              <path d="M 90 85 L 150 85 C 168 85 174 100 172 120 C 168 140 148 152 120 152 C 92 152 72 140 68 120 C 66 100 72 85 90 85 Z" fill="url(#hub-grad)" stroke="#161b24" strokeWidth="2.5" filter="url(#steer-shadow)" />
+              <path d="M 92 90 L 148 90 C 162 90 168 102 166 118 C 162 134 144 146 120 146 C 96 146 78 134 74 118 C 72 102 78 90 92 90 Z" fill="none" stroke="#252e3d" strokeWidth="1" strokeDasharray="3 3" opacity="0.6" />
+              <text x="80" y="122" fontFamily="var(--font-cyber)" fontSize="5" fill="#475569" fontWeight="bold">HORN</text>
+              <text x="160" y="122" fontFamily="var(--font-cyber)" fontSize="5" fill="#475569" fontWeight="bold" textAnchor="end">HORN</text>
+
+              {/* Premium Center Badge (PSG) */}
+              <circle cx="120" cy="120" r="23" fill="url(#chrome-ring)" stroke="#0c0f15" strokeWidth="1" />
+              <circle cx="120" cy="120" r="19" fill="#070a0e" stroke="#ffffff" strokeWidth="1.5" />
+              <text x="120" y="123" fontFamily="var(--font-cyber)" fontSize="9" fontWeight="900" fill="#ffffff" textAnchor="middle" letterSpacing="0.5">PSG</text>
+
+              {/* Sleek integrated drag handle dial bead on 12 o'clock rim */}
+              <g className="drag-point-handle" filter="url(#cyan-glow)">
+                <circle cx="120" cy="24" r="9" fill="#00f0ff" stroke="#ffffff" strokeWidth="1.5" />
+                <circle cx="120" cy="24" r="4" fill="#0c0f16" />
               </g>
             </svg>
           </div>
-
-          {/* Ghost Target Overlay (semi-transparent target steering wheel overlay) */}
-          {isSimulating && currentLessonIndex >= 0 && (
-            <div
-              className="steering-wheel ghost-target-wheel"
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: '100%',
-                transform: `rotate(${targetAngle}deg)`,
-                opacity: 0.35,
-                pointerEvents: 'none',
-                zIndex: 2
-              }}
-            >
-              <svg className="steering-wheel-svg" viewBox="0 0 240 240">
-                <defs>
-                  <radialGradient id="rim-grad-ghost" cx="50%" cy="50%" r="50%">
-                    <stop offset="72%" stopColor="rgba(0, 240, 255, 0.15)" />
-                    <stop offset="100%" stopColor="rgba(0, 240, 255, 0.05)" />
-                  </radialGradient>
-                </defs>
-                {/* Outer rim */}
-                <circle cx="120" cy="120" r="100" fill="none" stroke="url(#rim-grad-ghost)" strokeWidth="16" />
-                <circle cx="120" cy="120" r="92" fill="none" stroke="#00f0ff" strokeWidth="1.5" strokeDasharray="6, 4" opacity="0.6" />
-                {/* Spokes */}
-                <path d="M 30 114 L 85 114 Q 92 114 90 128 L 34 128 Z" fill="rgba(0, 240, 255, 0.2)" />
-                <path d="M 210 114 L 155 114 Q 148 114 150 128 L 206 128 Z" fill="rgba(0, 240, 255, 0.2)" />
-                <path d="M 112 150 L 112 206 C 112 210 128 210 128 206 L 128 150 Z" fill="rgba(0, 240, 255, 0.2)" />
-                {/* Hub */}
-                <circle cx="120" cy="120" r="34" fill="rgba(0, 240, 255, 0.1)" stroke="#00f0ff" strokeWidth="1" strokeDasharray="3, 3" />
-                <circle cx="120" cy="120" r="18" fill="rgba(0, 240, 255, 0.2)" stroke="#00f0ff" strokeWidth="1" />
-                <text x="120" y="123" fontFamily="'Orbitron', sans-serif" fontSize="9" fontWeight="900" fill="#00f0ff" textAnchor="middle" letterSpacing="0.5">TGT</text>
-              </svg>
-            </div>
-          )}
         </div>
       </div>
 
       <div className="stats-panel">
         <div className="telemetry-value-display">
-          <span className="telemetry-label">REFERENCE ANGLE</span>
+          <span className="telemetry-label">STEERING ANGLE</span>
           <div className="telemetry-box angle-box-dummy">
             <span className="telemetry-number" id="dummy-angle-val">{formatted.text}</span>
           </div>

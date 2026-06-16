@@ -9,38 +9,34 @@ export default function MatchGaugeCard({ actualAngle = 0, dummyAngle = 0 }) {
   const strokeDashoffset = ARC_LENGTH - (accuracy / 100) * ARC_LENGTH;
 
   // Determine status details & colors based on requirements:
-  // 90-100: Green
-  // 70-89: Yellow
-  // 50-69: Orange
-  // Below 50: Red
-  let statusText = 'Poor Match 🔴';
-  let statusClass = 'status-poor';
-  let accuracyClass = 'accuracy-poor';
-  let glowClass = 'accuracy-glow-poor';
-  let textClass = 'text-poor';
-  let themeColorVar = 'var(--accent-red)';
+  // Excellent (Green, >= 85%)
+  // Moderate (Amber, 50-84%)
+  // Low (Cyan, < 50%)
+  // Red reserved for Stop and critical warnings.
+  let statusText = 'Low Match 🔵';
+  let statusClass = 'status-low';
+  let accuracyClass = 'accuracy-low';
+  let glowClass = 'accuracy-glow-low';
+  let textClass = 'text-low';
+  let themeColorVar = 'var(--accent-blue)';
+  let themeRGBVar = '0, 240, 255';
 
-  if (accuracy >= 90) {
+  if (accuracy >= 85) {
     statusText = 'Excellent Match ✅';
     statusClass = 'status-excellent';
     accuracyClass = 'accuracy-excellent';
     glowClass = 'accuracy-glow-excellent';
     textClass = 'text-excellent';
     themeColorVar = 'var(--accent-green)';
-  } else if (accuracy >= 70) {
-    statusText = 'Good Match 🟡';
-    statusClass = 'status-good';
-    accuracyClass = 'accuracy-good';
-    glowClass = 'accuracy-glow-good';
-    textClass = 'text-good';
-    themeColorVar = 'var(--accent-yellow)';
+    themeRGBVar = '0, 255, 159';
   } else if (accuracy >= 50) {
-    statusText = 'Average Match 🟠';
-    statusClass = 'status-average';
-    accuracyClass = 'accuracy-average';
-    glowClass = 'accuracy-glow-average';
-    textClass = 'text-average';
-    themeColorVar = 'var(--accent-orange)';
+    statusText = 'Moderate Match 🟡';
+    statusClass = 'status-moderate';
+    accuracyClass = 'accuracy-moderate';
+    glowClass = 'accuracy-glow-moderate';
+    textClass = 'text-moderate';
+    themeColorVar = 'var(--accent-amber)';
+    themeRGBVar = '255, 170, 0';
   }
 
   // Calculate dynamic feedback message:
@@ -54,22 +50,13 @@ export default function MatchGaugeCard({ actualAngle = 0, dummyAngle = 0 }) {
   } else if (accuracy >= 70) {
     feedbackMessage = "Good Match";
   } else {
-    // accuracy < 70
-    if (diffAngle > 30) {
-      feedbackMessage = "Try Turning More";
-    } else if (diffAngle < -30) {
-      feedbackMessage = "Try Turning More";
-    } else if (diffAngle > 0) {
-      feedbackMessage = "Turn Slightly Right";
-    } else {
-      feedbackMessage = "Turn Slightly Left";
-    }
+    feedbackMessage = "Keep Adjusting";
   }
 
   // Standout border / glow color styles based on current accuracy level
   const heroCardStyle = {
-    borderColor: `rgba(${accuracy >= 90 ? '0, 255, 159' : accuracy >= 70 ? '255, 204, 0' : accuracy >= 50 ? '255, 149, 0' : '255, 59, 48'}, 0.45)`,
-    boxShadow: `0 0 45px rgba(${accuracy >= 90 ? '0, 255, 159' : accuracy >= 70 ? '255, 204, 0' : accuracy >= 50 ? '255, 149, 0' : '255, 59, 48'}, 0.2), inset 0 0 30px rgba(${accuracy >= 90 ? '0, 255, 159' : accuracy >= 70 ? '255, 204, 0' : accuracy >= 50 ? '255, 149, 0' : '255, 59, 48'}, 0.08)`,
+    borderColor: `rgba(${themeRGBVar}, 0.35)`,
+    boxShadow: `0 0 20px rgba(${themeRGBVar}, 0.15), inset 0 0 15px rgba(${themeRGBVar}, 0.04)`,
     transform: 'scale(1.02)',
     zIndex: 6
   };
@@ -82,8 +69,8 @@ export default function MatchGaugeCard({ actualAngle = 0, dummyAngle = 0 }) {
     >
       <div className="card-edge-glow"></div>
       <div className="card-meta">
-        <span className="panel-label" style={{ color: themeColorVar, fontWeight: 'bold' }}>Accuracy Card</span>
-        <span className="telemetry-id">SYNC-02</span>
+        <span className="panel-label" style={{ color: themeColorVar, fontWeight: 'bold' }}>Synchronization</span>
+        <span className="telemetry-id">Synchronization</span>
       </div>
 
       <div className="gauge-outer-wrapper">
@@ -120,7 +107,7 @@ export default function MatchGaugeCard({ actualAngle = 0, dummyAngle = 0 }) {
           marginTop: '4px', 
           padding: '6px 16px', 
           borderRadius: '8px', 
-          border: `1px solid rgba(${accuracy >= 90 ? '0, 255, 159' : accuracy >= 70 ? '255, 204, 0' : accuracy >= 50 ? '255, 149, 0' : '255, 59, 48'}, 0.25)`,
+          border: `1px solid rgba(${themeRGBVar}, 0.25)`,
           background: 'rgba(0, 0, 0, 0.3)',
           textAlign: 'center',
           minWidth: '200px'

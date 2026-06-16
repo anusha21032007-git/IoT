@@ -247,6 +247,8 @@ function App() {
         countdown={countdown}
         instruction={instruction}
         scenarioTitle={scenarioTitle}
+        actualAngle={actualAngle}
+        dummyAngle={dummyAngle}
       />
 
       {/* Centered Controls Unit */}

@@ -5,14 +5,28 @@ export default function InstructorPanel({
   currentLessonIndex = -1,
   countdown = null,
   instruction = '',
-  scenarioTitle = ''
+  scenarioTitle = '',
+  actualAngle = 0,
+  dummyAngle = 0
 }) {
   let bodyContent = '';
 
   if (currentLessonIndex >= 4) {
     bodyContent = 'Training Completed ✅ Press START to begin another session.';
   } else if (isSimulating) {
-    bodyContent = instruction ? `"${instruction}"` : 'Simulating...';
+    if (countdown !== null) {
+      bodyContent = `Preparing: ${scenarioTitle || 'Next Lesson'}`;
+    } else {
+      // Calculate dynamic friendly guidance message
+      const angleDiff = actualAngle - dummyAngle;
+      if (Math.abs(angleDiff) < 5) {
+        bodyContent = 'Perfect synchronization!';
+      } else if (dummyAngle < actualAngle) {
+        bodyContent = 'Turn slightly more right.';
+      } else {
+        bodyContent = 'Turn slightly more left.';
+      }
+    }
   } else {
     bodyContent = 'Ready to begin steering training. Press START to begin.';
   }
@@ -21,7 +35,7 @@ export default function InstructorPanel({
     <div className="instructor-bar glass-card" id="instructor-panel-section">
       <div className="instructor-content-row">
         <div className="instructor-text-group">
-          <span className="instructor-label">INSTRUCTOR:</span>
+          <span className="instructor-label">GUIDANCE:</span>
           <span className="instructor-instruction" id="instructor-text">{bodyContent}</span>
         </div>
         

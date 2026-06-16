@@ -23,9 +23,8 @@ export default function RotateDevice() {
             <path d="M 48 22 A 18 18 0 0 1 42 44 L 47 44 M 42 44 L 42 39" className="rotate-arrow" />
           </svg>
         </div>
-        <h1 className="rotate-title">🔄 Rotate Device</h1>
-        <p className="rotate-message">DriveSync works best in landscape mode.</p>
-        <p className="rotate-subtitle">Please rotate your device to continue.</p>
+        <h1 className="rotate-title">🔄 Landscape Mode Required</h1>
+        <p className="rotate-message">Please rotate your device to enter DriveSync cockpit mode.</p>
       </div>
     </div>
   );
