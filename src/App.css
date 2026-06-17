@@ -1146,9 +1146,9 @@ body {
    ========================================================================== */
 @media (max-width: 900px) and (orientation: landscape) {
     :root {
-        --wheel-size: 155px;
+        --wheel-size: 170px;
         /* Large steering wheels fitting the container height */
-        --gauge-size: 115px;
+        --gauge-size: 75px;
         /* Compact gauge size */
     }
 
@@ -1264,6 +1264,18 @@ body {
         height: 100% !important;
     }
 
+    .gauge-bg {
+        stroke-width: 5 !important;
+    }
+
+    .gauge-value {
+        stroke-width: 5 !important;
+    }
+
+    .gauge-glow {
+        stroke-width: 8 !important;
+    }
+
     .feedback-message-box {
         display: block !important;
         margin-top: 1px !important;
@@ -1286,10 +1298,11 @@ body {
         width: 100% !important;
         height: auto !important;
         margin: 0 !important;
+        padding: 2px 0 !important;
     }
 
     .svg-gauge-container {
-        height: 70% !important;
+        height: 45% !important;
         width: auto !important;
         aspect-ratio: 1 / 1 !important;
         max-width: 100% !important;
@@ -1311,7 +1324,7 @@ body {
     }
 
     .gauge-accuracy-percentage {
-        font-size: 2.1rem !important;
+        font-size: 1.5rem !important;
         /* Shrunk moderately to fit inside circle */
         font-weight: 900 !important;
         line-height: 1 !important;
@@ -1353,7 +1366,7 @@ body {
         width: auto !important;
         aspect-ratio: 1 / 1 !important;
         max-width: 100% !important;
-        transform: scale(1.18) !important;
+        transform: scale(1.32) !important;
     }
 
     /* Depth shadow to improve steering wheel visibility */
