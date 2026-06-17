@@ -1146,7 +1146,7 @@ body {
    ========================================================================== */
 @media (max-width: 900px) and (orientation: landscape) {
     :root {
-        --wheel-size: 135px;
+        --wheel-size: 155px;
         /* Large steering wheels fitting the container height */
         --gauge-size: 115px;
         /* Compact gauge size */
@@ -1158,9 +1158,9 @@ body {
 
     .cockpit-container {
         display: grid;
-        grid-template-rows: 10fr 55fr 12fr 23fr;
-        gap: 8px;
-        padding: 8px;
+        grid-template-rows: 13fr 51fr 12fr 24fr !important;
+        gap: 6px !important;
+        padding: 12px 8px 6px 8px !important;
         width: 100vw;
         height: 100vh;
         height: 100dvh;
@@ -1173,7 +1173,7 @@ body {
 
     /* Compact header with visible tagline */
     .dashboard-header {
-        padding: 0;
+        padding: 0 0 4px 0 !important;
         height: 100%;
         display: flex;
         flex-direction: column;
@@ -1204,30 +1204,34 @@ body {
         height: 100%;
         min-height: 0;
         align-items: stretch;
+        margin-top: 8px !important;
     }
 
     #actual-steering-section {
         grid-column: 3;
         grid-row: 1;
-        padding: 4px 10px !important;
+        padding: 4px 6px !important;
         justify-content: center;
-        gap: 4px;
+        gap: 2px;
     }
 
     #accuracy-gauge-section {
         grid-column: 2;
         grid-row: 1;
-        padding: 8px 12px;
+        padding: 4px 8px !important;
         justify-content: center;
-        gap: 4px;
+        gap: 2px;
+        transform: scale(1.04) !important;
+        z-index: 10 !important;
+        box-shadow: 0 0 15px rgba(var(--accent-blue-rgb), 0.15) !important;
     }
 
     #dummy-steering-section {
         grid-column: 1;
         grid-row: 1;
-        padding: 4px 10px !important;
+        padding: 4px 6px !important;
         justify-content: center;
-        gap: 4px;
+        gap: 2px;
     }
 
     /* Display panel label centered & compact for visual order context */
@@ -1238,18 +1242,18 @@ body {
         width: 100% !important;
         border-bottom: none !important;
         padding-bottom: 0 !important;
-        margin-bottom: 2px !important;
+        margin-bottom: 1px !important;
     }
 
     .telemetry-card .panel-label {
-        font-size: 0.55rem !important;
+        font-size: 0.48rem !important;
         letter-spacing: 0.5px !important;
         font-weight: 700 !important;
     }
 
     .telemetry-card .telemetry-id {
         display: block !important;
-        font-size: 0.55rem !important;
+        font-size: 0.48rem !important;
         letter-spacing: 0.5px !important;
     }
 
@@ -1262,8 +1266,8 @@ body {
 
     .feedback-message-box {
         display: block !important;
-        margin-top: 2px !important;
-        padding: 2px 8px !important;
+        margin-top: 1px !important;
+        padding: 1px 6px !important;
         min-width: 120px !important;
         border-radius: 4px !important;
     }
@@ -1307,15 +1311,15 @@ body {
     }
 
     .gauge-accuracy-percentage {
-        font-size: 1.8rem !important;
+        font-size: 2.1rem !important;
         /* Shrunk moderately to fit inside circle */
         font-weight: 900 !important;
         line-height: 1 !important;
     }
 
     .gauge-status-panel {
-        gap: 2px !important;
-        margin-top: 2px !important;
+        gap: 1px !important;
+        margin-top: 1px !important;
         display: flex !important;
         flex-direction: column !important;
         align-items: center !important;
@@ -1323,12 +1327,12 @@ body {
     }
 
     .gauge-status-panel>div:first-child {
-        font-size: 0.75rem !important;
+        font-size: 0.8rem !important;
         /* Shrunk from 1.25rem by ~40% for compact fit */
     }
 
     .gauge-status-panel>div:nth-child(2) {
-        font-size: 0.7rem !important;
+        font-size: 0.72rem !important;
         /* Shrunk from 1.05rem to match hierarchy */
     }
 
@@ -1345,10 +1349,11 @@ body {
     }
 
     .steering-wheel-container {
-        height: 95% !important;
+        height: 100% !important;
         width: auto !important;
         aspect-ratio: 1 / 1 !important;
         max-width: 100% !important;
+        transform: scale(1.18) !important;
     }
 
     /* Depth shadow to improve steering wheel visibility */
@@ -1356,9 +1361,20 @@ body {
         filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.85)) !important;
     }
 
-    /* High contrast definition saturation for display from a distance */
+    /* High contrast definition brightness/saturation for display from a distance */
     .steering-wheel-svg {
-        filter: contrast(1.15) saturate(1.1) !important;
+        filter: contrast(1.25) saturate(1.15) brightness(1.12) !important;
+    }
+
+    /* Boost neon cyan glow intensity on mobile */
+    .steering-wheel-svg .wheel-glow-accent {
+        opacity: 0.65 !important;
+        filter: drop-shadow(0 0 3px rgba(0, 240, 255, 0.7)) !important;
+    }
+
+    .steering-wheel.is-moving .steering-wheel-svg .wheel-glow-accent {
+        opacity: 1.0 !important;
+        filter: drop-shadow(0 0 6px rgba(0, 240, 255, 1)) drop-shadow(0 0 12px rgba(0, 240, 255, 0.6)) !important;
     }
 
     /* Dynamic stats row side-by-side (showing steering angle and direction on 1 compact line) */
@@ -1368,7 +1384,7 @@ body {
         justify-content: space-around !important;
         align-items: center !important;
         gap: 8px !important;
-        margin-top: 4px !important;
+        margin-top: 2px !important;
         width: 100% !important;
     }
 
@@ -1378,11 +1394,11 @@ body {
         flex-direction: column !important;
         align-items: center !important;
         margin-bottom: 0 !important;
-        gap: 2px !important;
+        gap: 1px !important;
     }
 
     .telemetry-box {
-        padding: 2px 6px !important;
+        padding: 1px 4px !important;
         width: 100% !important;
         max-width: 60px !important;
     }
@@ -1402,28 +1418,29 @@ body {
     }
 
     .sub-value {
-        font-size: 0.8rem !important;
+        font-size: 0.85rem !important;
     }
 
     .telemetry-label {
         display: block !important;
-        font-size: 0.5rem !important;
+        font-size: 0.45rem !important;
         margin: 0 !important;
         text-align: center !important;
     }
 
     .sub-label {
         display: block !important;
-        font-size: 0.5rem !important;
+        font-size: 0.45rem !important;
         margin: 0 !important;
         text-align: center !important;
     }
 
     /* Guidance strip layout adjustments */
     .instructor-bar {
-        padding: 4px 12px !important;
+        padding: 3px 10px !important;
         border-radius: 8px !important;
         height: 100% !important;
+        min-height: 22px !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
@@ -1479,16 +1496,16 @@ body {
 
     .btn-group {
         width: auto !important;
-        gap: 12px !important;
+        gap: 16px !important;
     }
 
     .infotainment-btn {
-        min-width: 100px !important;
+        min-width: 120px !important;
     }
 
     .infotainment-btn .btn-inner {
-        padding: 6px 14px !important;
-        font-size: 0.65rem !important;
+        padding: 8px 18px !important;
+        font-size: 0.7rem !important;
         letter-spacing: 1.5px !important;
     }
 }
