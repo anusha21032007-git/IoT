@@ -19,17 +19,15 @@ export default function MatchGaugeCard({
     ? ARC_LENGTH
     : ARC_LENGTH - (accuracy / 100) * ARC_LENGTH;
 
-  // Determine status details & colors based on requirements:
-  // Perfect Match (if difference <= 2°)
-  // Moderate Match (if difference > 2° and difference <= 15°)
-  // Low Match (if difference > 15°)
-  let statusText = 'Low Match 🔵';
+  // Determine status details & colors based on requirements
+  let statusText = 'LOW MATCH 🔵';
   let statusClass = 'status-low';
   let accuracyClass = 'accuracy-low';
   let glowClass = 'accuracy-glow-low';
   let textClass = 'text-low';
   let themeColorVar = 'var(--accent-blue)';
   let themeRGBVar = '0, 240, 255';
+  let feedbackMessage = 'Turn More';
 
   if (shouldHide) {
     statusText = 'STEER TO MATCH ⏱️';
@@ -39,39 +37,53 @@ export default function MatchGaugeCard({
     textClass = 'text-low';
     themeColorVar = 'var(--accent-blue)';
     themeRGBVar = '0, 240, 255';
+    feedbackMessage = 'Measuring...';
   } else {
-    if (difference <= 2) {
-      statusText = 'Perfect Match ✅';
+    if (accuracy >= 90) {
+      statusText = 'PERFECT MATCH ✅';
       statusClass = 'status-excellent';
       accuracyClass = 'accuracy-excellent';
       glowClass = 'accuracy-glow-excellent';
       textClass = 'text-excellent';
       themeColorVar = 'var(--accent-green)';
       themeRGBVar = '0, 255, 159';
-    } else if (difference <= 15) {
-      statusText = 'Moderate Match 🟡';
+      feedbackMessage = 'Perfect Alignment';
+    } else if (accuracy >= 70) {
+      statusText = 'GOOD MATCH 🟢';
+      statusClass = 'status-excellent';
+      accuracyClass = 'accuracy-excellent';
+      glowClass = 'accuracy-glow-excellent';
+      textClass = 'text-excellent';
+      themeColorVar = 'var(--accent-green)';
+      themeRGBVar = '0, 255, 159';
+      feedbackMessage = 'Almost There';
+    } else if (accuracy >= 50) {
+      statusText = 'AVERAGE MATCH 🟡';
       statusClass = 'status-moderate';
       accuracyClass = 'accuracy-moderate';
       glowClass = 'accuracy-glow-moderate';
       textClass = 'text-moderate';
       themeColorVar = 'var(--accent-amber)';
       themeRGBVar = '255, 170, 0';
-    }
-  }
-
-  // Calculate dynamic feedback message:
-  let feedbackMessage = "";
-  if (shouldHide) {
-    feedbackMessage = "Measuring...";
-  } else {
-    if (difference <= 2) {
-      feedbackMessage = "Perfect Alignment";
-    } else if (difference <= 5) {
-      feedbackMessage = "Great Steering Control";
-    } else if (difference <= 15) {
-      feedbackMessage = "Good Match";
+      feedbackMessage = 'Keep Adjusting';
+    } else if (accuracy >= 25) {
+      statusText = 'LOW MATCH 🔵';
+      statusClass = 'status-low';
+      accuracyClass = 'accuracy-low';
+      glowClass = 'accuracy-glow-low';
+      textClass = 'text-low';
+      themeColorVar = 'var(--accent-blue)';
+      themeRGBVar = '0, 240, 255';
+      feedbackMessage = 'Turn More';
     } else {
-      feedbackMessage = "Keep Adjusting";
+      statusText = 'POOR MATCH 🔴';
+      statusClass = 'status-poor';
+      accuracyClass = 'accuracy-poor';
+      glowClass = 'accuracy-glow-poor';
+      textClass = 'text-poor';
+      themeColorVar = 'var(--accent-red)';
+      themeRGBVar = '255, 59, 48';
+      feedbackMessage = 'Try Again';
     }
   }
 
@@ -106,11 +118,11 @@ export default function MatchGaugeCard({
               </filter>
             </defs>
             {/* Background Track */}
-            <circle className="gauge-bg" cx="100" cy="100" r="75" strokeDasharray="353.43 471.24" />
+            <circle className="gauge-bg" cx="100" cy="100" r="75" stroke-dasharray="353.43 471.24" />
             {/* Glow Stroke */}
-            <circle className={`gauge-glow ${glowClass}`} id="gauge-stroke-glow" cx="100" cy="100" r="75" strokeDasharray="353.43 471.24" strokeDashoffset={strokeDashoffset} filter="url(#glow-blur)" />
+            <circle className={`gauge-glow ${glowClass}`} id="gauge-stroke-glow" cx="100" cy="100" r="75" stroke-dasharray="353.43 471.24" stroke-dashoffset={strokeDashoffset} filter="url(#glow-blur)" />
             {/* Active Value Stroke */}
-            <circle className={`gauge-value ${accuracyClass}`} id="gauge-stroke-val" cx="100" cy="100" r="75" strokeDasharray="353.43 471.24" strokeDashoffset={strokeDashoffset} />
+            <circle className={`gauge-value ${accuracyClass}`} id="gauge-stroke-val" cx="100" cy="100" r="75" stroke-dasharray="353.43 471.24" stroke-dashoffset={strokeDashoffset} />
           </svg>
           <div className="gauge-overlay-content">
             <span className={`gauge-accuracy-percentage ${textClass}`} id="accuracy-percentage-val">
