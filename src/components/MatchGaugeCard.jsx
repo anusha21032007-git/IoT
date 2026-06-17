@@ -1,18 +1,28 @@
 import React from 'react';
 
-export default function MatchGaugeCard({ actualAngle = 0, dummyAngle = 0 }) {
+export default function MatchGaugeCard({
+  actualAngle = 0,
+  dummyAngle = 0,
+  isSimulating = false,
+  currentLessonIndex = -1,
+  revealResult = false
+}) {
+  const isTrainingActive = isSimulating && currentLessonIndex >= 0;
+  const shouldHide = isTrainingActive && !revealResult;
+
   const difference = Math.abs(actualAngle - dummyAngle);
   const accuracy = Math.max(0, Math.min(100, Math.round(100 - difference)));
 
   // Gauge arc parameters
   const ARC_LENGTH = 353.43;
-  const strokeDashoffset = ARC_LENGTH - (accuracy / 100) * ARC_LENGTH;
+  const strokeDashoffset = shouldHide
+    ? ARC_LENGTH
+    : ARC_LENGTH - (accuracy / 100) * ARC_LENGTH;
 
   // Determine status details & colors based on requirements:
-  // Excellent (Green, >= 85%)
-  // Moderate (Amber, 50-84%)
-  // Low (Cyan, < 50%)
-  // Red reserved for Stop and critical warnings.
+  // Perfect Match (if difference <= 2°)
+  // Moderate Match (if difference > 2° and difference <= 15°)
+  // Low Match (if difference > 15°)
   let statusText = 'Low Match 🔵';
   let statusClass = 'status-low';
   let accuracyClass = 'accuracy-low';
@@ -21,36 +31,48 @@ export default function MatchGaugeCard({ actualAngle = 0, dummyAngle = 0 }) {
   let themeColorVar = 'var(--accent-blue)';
   let themeRGBVar = '0, 240, 255';
 
-  if (accuracy >= 85) {
-    statusText = 'Excellent Match ✅';
-    statusClass = 'status-excellent';
-    accuracyClass = 'accuracy-excellent';
-    glowClass = 'accuracy-glow-excellent';
-    textClass = 'text-excellent';
-    themeColorVar = 'var(--accent-green)';
-    themeRGBVar = '0, 255, 159';
-  } else if (accuracy >= 50) {
-    statusText = 'Moderate Match 🟡';
-    statusClass = 'status-moderate';
-    accuracyClass = 'accuracy-moderate';
-    glowClass = 'accuracy-glow-moderate';
-    textClass = 'text-moderate';
-    themeColorVar = 'var(--accent-amber)';
-    themeRGBVar = '255, 170, 0';
+  if (shouldHide) {
+    statusText = 'STEER TO MATCH ⏱️';
+    statusClass = 'status-low';
+    accuracyClass = 'accuracy-low';
+    glowClass = 'accuracy-glow-low';
+    textClass = 'text-low';
+    themeColorVar = 'var(--accent-blue)';
+    themeRGBVar = '0, 240, 255';
+  } else {
+    if (difference <= 2) {
+      statusText = 'Perfect Match ✅';
+      statusClass = 'status-excellent';
+      accuracyClass = 'accuracy-excellent';
+      glowClass = 'accuracy-glow-excellent';
+      textClass = 'text-excellent';
+      themeColorVar = 'var(--accent-green)';
+      themeRGBVar = '0, 255, 159';
+    } else if (difference <= 15) {
+      statusText = 'Moderate Match 🟡';
+      statusClass = 'status-moderate';
+      accuracyClass = 'accuracy-moderate';
+      glowClass = 'accuracy-glow-moderate';
+      textClass = 'text-moderate';
+      themeColorVar = 'var(--accent-amber)';
+      themeRGBVar = '255, 170, 0';
+    }
   }
 
   // Calculate dynamic feedback message:
-  // Perfect Alignment, Great Steering Control, Good Match, Turn Slightly Left, Turn Slightly Right, Try Turning More
-  const diffAngle = actualAngle - dummyAngle; // positive if actual is more to the right than dummy
   let feedbackMessage = "";
-  if (accuracy >= 95) {
-    feedbackMessage = "Perfect Alignment";
-  } else if (accuracy >= 85) {
-    feedbackMessage = "Great Steering Control";
-  } else if (accuracy >= 70) {
-    feedbackMessage = "Good Match";
+  if (shouldHide) {
+    feedbackMessage = "Measuring...";
   } else {
-    feedbackMessage = "Keep Adjusting";
+    if (difference <= 2) {
+      feedbackMessage = "Perfect Alignment";
+    } else if (difference <= 5) {
+      feedbackMessage = "Great Steering Control";
+    } else if (difference <= 15) {
+      feedbackMessage = "Good Match";
+    } else {
+      feedbackMessage = "Keep Adjusting";
+    }
   }
 
   // Standout border / glow color styles based on current accuracy level
@@ -91,7 +113,9 @@ export default function MatchGaugeCard({ actualAngle = 0, dummyAngle = 0 }) {
             <circle className={`gauge-value ${accuracyClass}`} id="gauge-stroke-val" cx="100" cy="100" r="75" strokeDasharray="353.43 471.24" strokeDashoffset={strokeDashoffset} />
           </svg>
           <div className="gauge-overlay-content">
-            <span className={`gauge-accuracy-percentage ${textClass}`} id="accuracy-percentage-val">{accuracy}%</span>
+            <span className={`gauge-accuracy-percentage ${textClass}`} id="accuracy-percentage-val">
+              {shouldHide ? '--%' : `${accuracy}%`}
+            </span>
           </div>
         </div>
       </div>
@@ -101,7 +125,7 @@ export default function MatchGaugeCard({ actualAngle = 0, dummyAngle = 0 }) {
           {statusText}
         </div>
         <div style={{ color: 'var(--text-primary)', fontSize: '1.05rem', fontWeight: '600', fontFamily: 'var(--font-cyber)' }}>
-          Difference: {Math.round(difference)}°
+          Difference: {shouldHide ? '--°' : `${Math.round(difference)}°`}
         </div>
         <div className={`feedback-message-box ${statusClass}`} style={{ 
           marginTop: '4px', 

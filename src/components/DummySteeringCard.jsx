@@ -5,7 +5,8 @@ export default function DummySteeringCard({
   targetAngle = 0,
   isSimulating = false,
   currentLessonIndex = -1,
-  setDummyAngle
+  setDummyAngle,
+  revealResult = false
 }) {
   const [inputMethod, setInputMethod] = useState('MANUAL');
 
@@ -144,7 +145,12 @@ export default function DummySteeringCard({
     };
   };
 
+  const isTrainingActive = isSimulating && currentLessonIndex >= 0;
+  const shouldHide = isTrainingActive && !revealResult;
+
   const formatted = formatAngle(dummyAngle);
+  const displayText = shouldHide ? '???' : formatted.text;
+  const displayDir = shouldHide ? '---' : formatted.dir;
 
   return (
     <section className="telemetry-card glass-card" id="dummy-steering-section">
@@ -291,14 +297,14 @@ export default function DummySteeringCard({
         <div className="telemetry-value-display">
           <span className="telemetry-label">STEERING ANGLE</span>
           <div className="telemetry-box angle-box-dummy">
-            <span className="telemetry-number" id="dummy-angle-val">{formatted.text}</span>
+            <span className="telemetry-number" id="dummy-angle-val">{displayText}</span>
           </div>
         </div>
         <div className="sub-telemetry-row" style={{ justifyContent: 'center' }}>
           <div className="sub-telemetry-item" style={{ textAlign: 'center' }}>
             <span className="sub-label">DIRECTION</span>
-            <span className={`sub-value ${formatted.dir !== 'CENTER' ? 'highlight-cyan' : ''}`} id="dummy-dir-val" style={{ fontSize: '0.9rem' }}>
-              {formatted.dir}
+            <span className={`sub-value ${displayDir !== 'CENTER' && displayDir !== '---' ? 'highlight-cyan' : ''}`} id="dummy-dir-val" style={{ fontSize: '0.9rem' }}>
+              {displayDir}
             </span>
           </div>
         </div>

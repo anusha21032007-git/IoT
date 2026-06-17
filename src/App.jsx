@@ -8,12 +8,50 @@ import ControlButtons from './components/ControlButtons';
 import RotateDevice from './components/RotateDevice';
 import './App.css';
 
-const LESSONS = [
-  { scenarioTitle: 'SCENARIO 01: GENTLE RIGHT', instruction: 'Take a gentle right turn.', target: 45 },
-  { scenarioTitle: 'SCENARIO 02: GENTLE LEFT', instruction: 'Take a gentle left turn.', target: -45 },
-  { scenarioTitle: 'SCENARIO 03: SHARP RIGHT', instruction: 'Take a sharp right turn.', target: 90 },
-  { scenarioTitle: 'SCENARIO 04: CENTER STEER', instruction: 'Straighten the wheel.', target: 0 }
-];
+const BASE_ANGLES = [0, 15, -15, 30, -30, 45, -45, 60, -60, 90, -90];
+
+function createLesson(angle, index) {
+  const scenarioNumber = String(index + 1).padStart(2, '0');
+  let title = '';
+  let instruction = '';
+
+  if (angle === 0) {
+    title = `SCENARIO ${scenarioNumber}: CENTER STEER`;
+    instruction = 'Straighten the wheel.';
+  } else {
+    const direction = angle > 0 ? 'RIGHT' : 'LEFT';
+    const absAngle = Math.abs(angle);
+    let intensity = 'GENTLE';
+    if (absAngle <= 15) {
+      intensity = 'MINIMAL';
+    } else if (absAngle <= 30) {
+      intensity = 'GENTLE';
+    } else if (absAngle <= 45) {
+      intensity = 'MODERATE';
+    } else if (absAngle <= 60) {
+      intensity = 'SHARP';
+    } else {
+      intensity = 'MAXIMUM';
+    }
+    title = `SCENARIO ${scenarioNumber}: ${intensity} ${direction}`;
+    instruction = `Take a ${intensity.toLowerCase()} ${direction.toLowerCase()} turn.`;
+  }
+
+  return {
+    scenarioTitle: title,
+    instruction: instruction,
+    target: angle
+  };
+}
+
+function shuffleArray(arr) {
+  const shuffled = [...arr];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
 
 function App() {
   const [isSimulating, setIsSimulating] = useState(false);
@@ -24,6 +62,10 @@ function App() {
   const [dummyAngle, setDummyAngle] = useState(0);
   const [elapsedTime, setElapsedTime] = useState(0);
   
+  const [revealResult, setRevealResult] = useState(false);
+  const [lessons, setLessons] = useState([]);
+  const lessonsRef = useRef([]);
+
   const [isLandscape, setIsLandscape] = useState(
     window.matchMedia("(orientation: landscape)").matches || window.innerWidth > window.innerHeight
   );
@@ -101,38 +143,52 @@ function App() {
     return () => clearInterval(interval);
   }, [isSimulating]);
 
-  const startLesson = (index) => {
+  const startLesson = (index, currentLessons = lessonsRef.current) => {
     setCurrentLessonIndex(index);
-    setCountdown(3);
+    setCountdown(5);
+    setRevealResult(false);
+    
+    // Reset driver wheel position to 0 at start of round
+    setActualAngle(0);
+    actualAngleRef.current = 0;
 
     if (holdTimerRef.current) clearTimeout(holdTimerRef.current);
     if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
 
-    runCountdown(3, index);
+    startRotation(index, currentLessons);
+    runCountdown(5, index, currentLessons);
   };
 
-  const runCountdown = (number, index) => {
+  const runCountdown = (number, index, currentLessons = lessonsRef.current) => {
     if (countdownTimerRef.current) clearTimeout(countdownTimerRef.current);
 
     countdownTimerRef.current = setTimeout(() => {
-      if (number === 3) {
+      if (number === 5) {
+        setCountdown(4);
+        runCountdown(4, index, currentLessons);
+      } else if (number === 4) {
+        setCountdown(3);
+        runCountdown(3, index, currentLessons);
+      } else if (number === 3) {
         setCountdown(2);
-        runCountdown(2, index);
+        runCountdown(2, index, currentLessons);
       } else if (number === 2) {
         setCountdown(1);
-        runCountdown(1, index);
+        runCountdown(1, index, currentLessons);
       } else if (number === 1) {
         setCountdown('GO');
-        runCountdown('GO', index);
+        setRevealResult(true);
+        runCountdown('GO', index, currentLessons);
       } else if (number === 'GO') {
         setCountdown(null);
-        startRotation(index);
+        startHold(index, currentLessons);
       }
     }, 1000);
   };
 
-  const startRotation = (index) => {
-    const lesson = LESSONS[index];
+  const startRotation = (index, currentLessons = lessonsRef.current) => {
+    const lesson = currentLessons[index];
+    if (!lesson) return;
     const target = lesson.target;
 
     const animate = () => {
@@ -143,7 +199,6 @@ function App() {
       if (Math.abs(diff) <= step) {
         actualAngleRef.current = target;
         setActualAngle(target);
-        startHold(index);
       } else {
         const nextAngle = current + (diff > 0 ? step : -step);
         actualAngleRef.current = nextAngle;
@@ -155,20 +210,20 @@ function App() {
     animationFrameRef.current = requestAnimationFrame(animate);
   };
 
-  const startHold = (index) => {
+  const startHold = (index, currentLessons = lessonsRef.current) => {
     if (holdTimerRef.current) clearTimeout(holdTimerRef.current);
 
     holdTimerRef.current = setTimeout(() => {
       const nextIndex = index + 1;
-      if (nextIndex < LESSONS.length) {
-        startLesson(nextIndex);
+      if (nextIndex < currentLessons.length) {
+        startLesson(nextIndex, currentLessons);
       } else {
         // Complete training sequence
         setIsSimulating(false);
-        setCurrentLessonIndex(LESSONS.length); // mark as completely finished
+        setCurrentLessonIndex(currentLessons.length); // mark as completely finished
         if (elapsedTimerRef.current) clearInterval(elapsedTimerRef.current);
       }
-    }, 4000); // Hold for 4 seconds
+    }, 4000); // Hold for 4 seconds after reveal is complete
   };
 
   const handleStart = () => {
@@ -185,7 +240,14 @@ function App() {
     actualAngleRef.current = 0;
     setDummyAngle(0);
     setElapsedTime(0);
+    setRevealResult(false);
     setIsSimulating(true);
+
+    // Generate dynamic shuffled angles training sequence
+    const shuffledAngles = shuffleArray(BASE_ANGLES);
+    const newLessons = shuffledAngles.map((angle, idx) => createLesson(angle, idx));
+    lessonsRef.current = newLessons;
+    setLessons(newLessons);
 
     // 2. Start clock
     elapsedTimerRef.current = setInterval(() => {
@@ -193,7 +255,7 @@ function App() {
     }, 1000);
 
     // 3. Start lesson 1
-    startLesson(0);
+    startLesson(0, newLessons);
   };
 
   const handleReset = () => {
@@ -205,10 +267,13 @@ function App() {
     actualAngleRef.current = 0;
     setDummyAngle(0);
     setElapsedTime(0);
+    setRevealResult(false);
+    setLessons([]);
+    lessonsRef.current = [];
   };
 
   // Derive lesson details
-  const activeLesson = currentLessonIndex >= 0 && currentLessonIndex < LESSONS.length ? LESSONS[currentLessonIndex] : null;
+  const activeLesson = currentLessonIndex >= 0 && currentLessonIndex < lessons.length ? lessons[currentLessonIndex] : null;
   const instruction = activeLesson ? activeLesson.instruction : '';
   const scenarioTitle = activeLesson ? activeLesson.scenarioTitle : '';
   const targetAngle = activeLesson ? activeLesson.target : 0;
@@ -227,16 +292,27 @@ function App() {
       
       {/* Main Steering Dashboard Grid */}
       <main className="dashboard-grid">
-        <ActualSteeringCard actualAngle={actualAngle} />
-        
-        <MatchGaugeCard actualAngle={actualAngle} dummyAngle={dummyAngle} />
-        
         <DummySteeringCard
           dummyAngle={dummyAngle}
           targetAngle={targetAngle}
           isSimulating={isSimulating}
           currentLessonIndex={currentLessonIndex}
           setDummyAngle={setDummyAngle}
+          revealResult={revealResult}
+        />
+
+        <MatchGaugeCard
+          actualAngle={actualAngle}
+          dummyAngle={dummyAngle}
+          isSimulating={isSimulating}
+          currentLessonIndex={currentLessonIndex}
+          revealResult={revealResult}
+        />
+
+        <ActualSteeringCard
+          actualAngle={actualAngle}
+          targetAngle={targetAngle}
+          isSimulating={isSimulating}
         />
       </main>
 
@@ -249,6 +325,7 @@ function App() {
         scenarioTitle={scenarioTitle}
         actualAngle={actualAngle}
         dummyAngle={dummyAngle}
+        lessonsCount={lessons.length}
       />
 
       {/* Centered Controls Unit */}

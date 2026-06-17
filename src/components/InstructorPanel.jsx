@@ -7,11 +7,12 @@ export default function InstructorPanel({
   instruction = '',
   scenarioTitle = '',
   actualAngle = 0,
-  dummyAngle = 0
+  dummyAngle = 0,
+  lessonsCount = 11
 }) {
   let bodyContent = '';
 
-  if (currentLessonIndex >= 4) {
+  if (currentLessonIndex >= lessonsCount) {
     bodyContent = 'Training Completed ✅ Press START to begin another session.';
   } else if (isSimulating) {
     if (countdown !== null) {

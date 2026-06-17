@@ -1207,7 +1207,7 @@ body {
     }
 
     #actual-steering-section {
-        grid-column: 1;
+        grid-column: 3;
         grid-row: 1;
         padding: 4px 10px !important;
         justify-content: center;
@@ -1223,7 +1223,7 @@ body {
     }
 
     #dummy-steering-section {
-        grid-column: 3;
+        grid-column: 1;
         grid-row: 1;
         padding: 4px 10px !important;
         justify-content: center;

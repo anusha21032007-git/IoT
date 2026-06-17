@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-export default function ActualSteeringCard({ actualAngle = 0 }) {
+export default function ActualSteeringCard({ actualAngle = 0, targetAngle = 0, isSimulating = false }) {
   const [isMoving, setIsMoving] = useState(false);
   const prevAngleRef = useRef(actualAngle);
   const timeoutRef = useRef(null);
@@ -26,7 +26,8 @@ export default function ActualSteeringCard({ actualAngle = 0 }) {
     };
   };
 
-  const formatted = formatAngle(actualAngle);
+  const displayAngle = isSimulating ? targetAngle : actualAngle;
+  const formatted = formatAngle(displayAngle);
 
   return (
     <section className="telemetry-card glass-card" id="actual-steering-section">
